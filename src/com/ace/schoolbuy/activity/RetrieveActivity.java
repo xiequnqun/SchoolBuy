@@ -10,22 +10,19 @@ import com.ace.schoolbuy.R.menu;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import cn.bmob.v3.Bmob;
 
-@SuppressWarnings("deprecation")
-public class MainActivity extends ActionBarActivity {
+public class RetrieveActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		Bmob.initialize(this, "e7258ecfce17c29d9210c84a835d6d79");
+		setContentView(R.layout.activity_retrieve);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.retrieve, menu);
 		return true;
 	}
 

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">SchoolBuy</string>
+    <string name="app_name">校园购物</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">设置</string>
+    <string name="title_activity_regist">注册</string>
+    <string name="title_activity_retrieve">找回密码</string>
 
 </resources>
