@@ -6,12 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.ace.schoolbuy.R;
-import com.ace.schoolbuy.R.id;
-import com.ace.schoolbuy.R.layout;
-import com.ace.schoolbuy.R.menu;
-import com.ace.schoolbuy.bmob.BmobManager;
 import com.ace.schoolbuy.model.User;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,10 +18,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.listener.SaveListener;
 
 public class RegistActivity extends ActionBarActivity implements OnClickListener {
-
-	private BmobManager mManager;
 	private EditText registUsername;
 	private EditText registPassword;
 	private EditText registPassword2;
@@ -39,7 +36,6 @@ public class RegistActivity extends ActionBarActivity implements OnClickListener
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_regist);
 		Bmob.initialize(this, "e7258ecfce17c29d9210c84a835d6d79");
-		mManager = BmobManager.getInstance(this);
 		initView();
 
 	}
@@ -59,7 +55,19 @@ public class RegistActivity extends ActionBarActivity implements OnClickListener
 	private void regist() {
 		mUser = createUser();
 		if (mUser != null) {
-			mManager.Save(mUser);
+			mUser.signUp(this, new SaveListener() {
+
+				@Override
+				public void onSuccess() {
+					Toast.makeText(RegistActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
+				}
+
+				@Override
+				public void onFailure(int arg0, String arg1) {
+					Toast.makeText(RegistActivity.this, "注册失败:" + arg1, Toast.LENGTH_SHORT).show();
+
+				}
+			});
 			finish();
 		}
 
@@ -79,7 +87,7 @@ public class RegistActivity extends ActionBarActivity implements OnClickListener
 		}
 		String tel = registTel.getText().toString();
 		if (checkTel(tel)) {
-			mUser.setTel(tel);
+			mUser.setMobilePhoneNumber(tel);
 		} else {
 			Toast.makeText(this, "请输入合法的手机号", Toast.LENGTH_SHORT).show();
 			mUser = null;
@@ -94,30 +102,8 @@ public class RegistActivity extends ActionBarActivity implements OnClickListener
 			mUser = null;
 			return mUser;
 		}
-		String account = createAccount();
-		mUser.setAccount(account);
+
 		return mUser;
-	}
-
-	//暂未使用
-	private String setAccount(String account) {
-		if (checkAccount(account)) {
-			account = createAccount();
-			setAccount(account);
-		}
-		return account;
-	}
-
-	// 检查是否账号是否已经存在
-	private boolean checkAccount(String account) {
-		return true;
-	}
-
-	// 随机生成6位数帐号
-	private String createAccount() {
-		int random = (int) (Math.random() * 1000000);
-
-		return random + "";
 	}
 
 	/**
@@ -157,6 +143,12 @@ public class RegistActivity extends ActionBarActivity implements OnClickListener
 			break;
 		}
 
+	}
+
+	@Override
+	protected void onActivityResult(int arg0, int arg1, Intent arg2) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(arg0, arg1, arg2);
 	}
 
 	@Override

@@ -28,6 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.listener.SaveListener;
 
 @SuppressWarnings("deprecation")
 public class LoginActivity extends ActionBarActivity implements OnClickListener {
@@ -39,6 +41,8 @@ public class LoginActivity extends ActionBarActivity implements OnClickListener 
 	private TextView mRegist;
 	private TextView mRetrieve;
 	private Button mLogin;
+	private String mName;
+	private User mUser;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +60,19 @@ public class LoginActivity extends ActionBarActivity implements OnClickListener 
 		mRegist.setOnClickListener(this);
 		mRetrieve = (TextView) findViewById(R.id.user_Retrieve);
 		mRetrieve.setOnClickListener(this);
-		mLogin = (Button)findViewById(R.id.user_login);
+		mLogin = (Button) findViewById(R.id.user_login);
 		mLogin.setOnClickListener(this);
+		mUser = getCurrentUser();
+		if (getCurrentUser() != null) {
+			mName = mUser.getUsername();
+			mUsername.setText(mName);
+			mAccount.setText(mName);
+		}
+
 	}
 
 	private void modifyHeader() {
-		
+
 	}
 
 	private void modifyPassword() {
@@ -71,14 +82,16 @@ public class LoginActivity extends ActionBarActivity implements OnClickListener 
 	private void registAccount() {
 		start(RegistActivity.class);
 	}
-	private void start( Class<?> cls){
+
+	private void start(Class<?> cls) {
 		startActivity(new Intent(this, cls));
 	}
+
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.user_header:
-			
+
 			break;
 		case R.id.user_regist:
 			registAccount();
@@ -96,21 +109,45 @@ public class LoginActivity extends ActionBarActivity implements OnClickListener 
 	}
 
 	private void login() {
-		Log.d("ace", "查询账号:"+mAccount.getText().toString());
-		mManager.query("account", "562111");
-//		User user = (User) mManager.getObject(mAccount.getText().toString(),"User");
-//		if(user == null){
-//			Toast.makeText(this, "账号不存在", Toast.LENGTH_SHORT).show();
-//			return;
-//		}
-//		String password = mPassword.getText().toString();
-//		if(user.getPassword().equals(password)){
-//			Toast.makeText(this, "登陆成功", Toast.LENGTH_SHORT).show();
-//		}else{
-//			Toast.makeText(this, "密码错误", Toast.LENGTH_SHORT).show();
-//			user = null;
-//		}
+		if (mName == null) {
+			mName = mAccount.getText().toString();
+		}
+		String password = mPassword.getText().toString();
+		if (mUser == null){
+			mUser = new User();
+			
+		}
+		mUser.setUsername(mName);
+		mUser.setPassword(password);
+		Log.d("ace", mName+password);
+		mUser.login(this, new SaveListener() {
+			
+			
+			@Override
+			public void onSuccess() {
+				Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+			}
+
+			@Override
+			public void onFailure(int arg0, String arg1) {
+				Toast.makeText(LoginActivity.this, "登录失败:" + arg1, Toast.LENGTH_SHORT).show();
+
+			}
+		});
 	}
+
+	/**
+	 * 获取本地用户
+	 */
+	private User getCurrentUser() {
+		User mUser = BmobUser.getCurrentUser(this, User.class);
+		if (mUser != null) {
+			return mUser;
+		} else {
+			return null;
+		}
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
